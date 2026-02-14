@@ -1,3 +1,40 @@
+/* ========== 全屏适配核心样式（新增） ========== */
+/* 兼容所有浏览器的全屏元素样式 */
+:fullscreen,
+:-webkit-full-screen,
+:-moz-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 999999 !important;
+  object-fit: cover !important; /* 针对视频/图片全屏拉伸适配 */
+}
+
+/* 移动端基础样式重置 */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden; /* 禁止横向滚动 */
+}
+
+/* 全屏状态下的页面容器适配 */
+body:has(:fullscreen) {
+  overflow: hidden !important;
+}
+
+/* 视频元素全屏特殊处理（适配视频播放器） */
+video:fullscreen,
+video:-webkit-full-screen,
+video:-moz-full-screen {
+  object-fit: contain !important; /* 视频保持比例，避免拉伸变形 */
+  background: #000; /* 视频黑边填充黑色 */
+}
+
+/* ========== 原有代码（完整保留） ========== */
 @import "tailwindcss";
 @import "./scroll-optimization.css";
 @import "./styles/variables.css";
@@ -7,6 +44,7 @@
 @import './styles/glass.css';
 @import "./styles/video-player.css";
 @import "./styles/search-history.css";
+
 @keyframes jiggle {
   0% { transform: rotate(-1deg); }
   50% { transform: rotate(1deg); }
