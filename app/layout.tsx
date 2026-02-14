@@ -68,6 +68,14 @@ export const metadata: Metadata = {
   icons: {
     icon: '/icon.png',
   },
+  // 新增：完善视口配置（解决全屏适配核心）
+  viewport: {
+    width: 'device-width',
+    initialScale: 1.0,
+    maximumScale: 1.0,
+    userScalable: false, // 禁止用户缩放
+    viewportFit: 'cover', // 适配刘海屏/全面屏
+  },
 };
 
 export default function RootLayout({
@@ -87,12 +95,14 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon.png" />
         {/* Theme Color (for browser address bar) */}
         <meta name="theme-color" content="#000000" />
-        {/* Mobile viewport */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        {/* 调整：优化视口标签（和 metadata 里的配置互补，双重保障） */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
+        // 新增：添加全屏状态的样式类监听（配合 CSS 使用）
+        style={{ margin: 0, padding: 0, minHeight: '100vh' }}
       >
         <ThemeProvider>
           <PasswordGate hasEnvPassword={!!process.env.ACCESS_PASSWORD}>
@@ -143,6 +153,28 @@ export default function RootLayout({
                     ticking = true;
                   }
                 }, { passive: true });
+
+                // 新增：监听全屏事件，强制适配尺寸
+                function handleFullscreenChange() {
+                  if (document.fullscreenElement) {
+                    // 进入全屏：隐藏滚动条，强制body占满屏幕
+                    document.documentElement.style.overflow = 'hidden';
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.width = '100vw';
+                    document.body.style.height = '100vh';
+                  } else {
+                    // 退出全屏：恢复默认
+                    document.documentElement.style.overflow = '';
+                    document.body.style.overflow = '';
+                    document.body.style.width = '';
+                    document.body.style.height = '';
+                  }
+                }
+
+                // 绑定全屏事件（兼容所有浏览器）
+                document.addEventListener('fullscreenchange', handleFullscreenChange);
+                document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+                document.addEventListener('mozfullscreenchange', handleFullscreenChange);
               })();
             `,
           }}
